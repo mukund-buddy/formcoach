@@ -1,0 +1,16 @@
+# Rust build artifacts
+keygen/target/
+
+# CRITICAL: private key kabhi commit na ho
+keygen/formcoach-ed25519.key
+*.key
+
+# customer data — public repo mein nahi
+docs/ledger.md
+
+# dev junk
+node_modules/
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db

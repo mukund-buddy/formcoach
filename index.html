@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0d1b2a">
+  <title>FormCoach — Camera Fitness Coach</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <h1>FormCoach</h1>
+    <span id="license-status" class="badge">Free</span>
+  </header>
+
+  <main>
+    <!-- Home / exercise picker -->
+    <section id="home">
+      <p class="tagline">Camera dekhega, count karega, coach banega.</p>
+      <div class="exercise-grid">
+        <button class="ex-card" data-exercise="pushup">
+          <h3>Pushups</h3><span class="tag">Free</span>
+        </button>
+        <button class="ex-card" data-exercise="surya">
+          <h3>Surya Namaskar</h3><span class="tag">Free</span>
+        </button>
+        <button class="ex-card locked" data-exercise="squats" disabled>
+          <h3>Squats</h3><span class="tag locked">₹49 Unlock</span>
+        </button>
+        <button class="ex-card locked" data-exercise="plank" disabled>
+          <h3>Plank</h3><span class="tag locked">₹49 Unlock</span>
+        </button>
+      </div>
+
+      <details class="learn">
+        <summary>Surya Namaskar kaise karte hain? (12 steps)</summary>
+        <ol>
+          <li><b>Pranamasana</b> — seedhe khade ho, haath chest pe namaste</li>
+          <li><b>Hasta Uttanasana</b> — haath sar ke upar uthao, peeche jhuko</li>
+          <li><b>Padahastasana</b> — aage jhuko, haath pairon/zameen tak</li>
+          <li><b>Ashwa Sanchalanasana</b> — ek pair peeche, haath zameen, dekho upar</li>
+          <li><b>Dandasana</b> — dusra pair bhi peeche, seedhi plank</li>
+          <li><b>Ashtanga Namaskara</b> — ghutne, seena, matha zameen pe</li>
+          <li><b>Bhujangasana</b> — seena upar uthao (cobra)</li>
+          <li><b>Adho Mukha Svanasana</b> — kamar sabse upar, ulta V</li>
+          <li><b>Ashwa Sanchalanasana</b> — pehla pair aage lao</li>
+          <li><b>Padahastasana</b> — dusra pair bhi aage, aage jhuko</li>
+          <li><b>Hasta Uttanasana</b> — utho, haath upar</li>
+          <li><b>Pranamasana</b> — haath chest pe jodo. 1 round poora!</li>
+        </ol>
+        <p class="muted">Camera screen pe app har pose ka number aur instruction dikhayega — bas follow karte jao.</p>
+      </details>
+
+      <div class="data-controls">
+        <h4>Aapka data (sirf is device pe)</h4>
+        <p class="muted">Video kabhi upload nahi hota. Data device se bahar nahi jaata. Koi backup hum nahi rakhte.</p>
+        <button id="btn-export" class="link-btn">Data export karo (CSV)</button>
+        <button id="btn-delete" class="link-btn danger">Mera saara data delete karo</button>
+      </div>
+    </section>
+
+    <!-- Goal picker -->
+    <section id="goal-picker" class="hidden">
+      <h2 id="goal-title">Target chuno</h2>
+      <p class="muted">Kitne tak ginoge? Goal complete hone pe app khud bata dega.</p>
+      <p class="muted tip">Tip: Surya Namaskar ke liye phone ko side view mein rakho (⇄ se back camera) — counting zyada accurate hogi.</p>
+      <div id="goal-chips" class="chip-row"></div>
+      <button id="goal-back" class="link-btn">← Wapas</button>
+    </section>
+
+    <!-- Camera + skeleton overlay -->
+    <section id="camera-stage" class="hidden">
+      <div class="cam-top">
+        <button id="cam-exit" title="Band karo">✕</button>
+        <div id="goal-pill">--</div>
+        <span class="spacer"></span>
+        <button id="btn-flip" title="Camera palto">⇄</button>
+      </div>
+      <div class="cam-view">
+        <video id="camera-feed" playsinline muted autoplay></video>
+        <canvas id="skeleton-overlay"></canvas>
+        <div id="loading-overlay">
+          <div class="spinner"></div>
+          <p id="load-msg">AI coach load ho raha hai... (pehli baar ~6MB)</p>
+          <button id="load-retry" class="hidden">Dobara try karo</button>
+        </div>
+        <div id="hud">
+          <div id="rep-count">0</div>
+          <div id="form-score">--</div>
+        </div>
+        <div id="debug-chip" class="hidden"></div>
+        <div id="cue-banner" class="hidden"></div>
+        <p id="status-chip" class="hidden"></p>
+      </div>
+      <div class="cam-controls">
+        <button id="btn-pause">Pause</button>
+        <button id="btn-end">Khatam</button>
+      </div>
+    </section>
+
+    <!-- Unlock screen -->
+    <section id="unlock-screen" class="hidden">
+      <h2>Full Version — ₹49 one-time</h2>
+      <p>Apna device code UPI payment ke saath WhatsApp pe bhejo:</p>
+      <div id="device-code" class="device-code">--------</div>
+      <ol class="steps">
+        <li>UPI se ₹49 karo (QR yahan aayega)</li>
+        <li>WhatsApp: payment screenshot + device code + apna naam</li>
+        <li>License key milegi — neeche enter karo</li>
+      </ol>
+      <input id="license-key-input" placeholder="FC-XXXX-XXXX-XXXX-XXXX-XXXX" autocomplete="off">
+      <button id="activate-btn">Activate</button>
+      <p id="activate-msg"></p>
+      <button id="restore-link" class="link-btn">Pehle purchase kiya? Restore karo</button>
+      <button id="unlock-back" class="link-btn">← Wapas</button>
+    </section>
+
+    <!-- Session summary -->
+    <section id="summary-screen" class="hidden">
+      <h2 id="summary-title">Session khatam!</h2>
+      <div id="summary-stats"></div>
+      <button id="summary-home">Home</button>
+    </section>
+
+    <p id="error-msg" class="hidden"></p>
+  </main>
+
+  <footer>
+    <button id="btn-unlock" class="link-btn">Unlock Full ₹49</button>
+  </footer>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
