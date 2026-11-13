@@ -2,38 +2,76 @@
 <html lang="hi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <meta name="theme-color" content="#0d1b2a">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#F8FAFC">
   <title>FormCoach — Camera Fitness Coach</title>
   <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <header>
-    <h1>FormCoach</h1>
-    <span id="license-status" class="badge">Free</span>
+
+  <!-- Minimal top header: brand + status -->
+  <header class="app-header glass">
+    <div class="brand">
+      <img src="assets/icons/icon-192.png" alt="" class="brand-icon">
+      <span>FormCoach</span>
+    </div>
+    <button id="status-pill" class="status-pill">Free</button>
   </header>
 
-  <main>
-    <!-- Home / exercise picker -->
-    <section id="home">
-      <p class="tagline">Camera dekhega, count karega, coach banega.</p>
-      <div class="exercise-grid">
-        <button class="ex-card" data-exercise="pushup">
-          <h3>Pushups</h3><span class="tag">Free</span>
+  <main id="app">
+
+    <!-- ============ TAB: HOME (dashboard) ============ -->
+    <section id="tab-home" class="tab">
+      <div class="greet-card glass">
+        <p class="greet-hi">Namaste</p>
+        <h2>Aaj ka target?</h2>
+        <div class="stat-chips">
+          <div class="stat-chip"><b id="stat-streak">0</b><span>din streak</span></div>
+          <div class="stat-chip"><b id="stat-today">0</b><span>aaj ke reps</span></div>
+          <div class="stat-chip"><b id="stat-sessions">0</b><span>sessions</span></div>
+        </div>
+      </div>
+
+      <h3 class="section-title">Exercises</h3>
+      <div class="ex-list">
+        <button class="ex-card glass" data-exercise="pushup">
+          <span class="ex-icon icon-violet">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6v12M18 6v12M3 9v6M21 9v6M6 12h12"/></svg>
+          </span>
+          <span class="ex-info"><h4>Pushups</h4><p>Elbow-angle form check</p></span>
+          <span class="ex-tag free">Free</span>
         </button>
-        <button class="ex-card" data-exercise="surya">
-          <h3>Surya Namaskar</h3><span class="tag">Free</span>
+
+        <button class="ex-card glass" data-exercise="surya">
+          <span class="ex-icon icon-amber">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="9" r="4"/><path d="M12 1v2M12 15v2M4 9H2M22 9h-2M6 3l1.5 1.5M17.5 4.5L19 3M6 15l1.5 1.5M17.5 13.5L19 15M8 21h8"/></svg>
+          </span>
+          <span class="ex-info"><h4>Surya Namaskar</h4><p>Guided 12-pose flow</p></span>
+          <span class="ex-tag free">Free</span>
         </button>
-        <button class="ex-card locked" data-exercise="squats" disabled>
-          <h3>Squats</h3><span class="tag locked">₹49 Unlock</span>
+
+        <button class="ex-card glass locked" data-exercise="squats" disabled>
+          <span class="ex-icon icon-slate">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+          </span>
+          <span class="ex-info"><h4>Squats</h4><p>Knee-angle tracker</p></span>
+          <span class="ex-tag locked">₹49</span>
         </button>
-        <button class="ex-card locked" data-exercise="plank" disabled>
-          <h3>Plank</h3><span class="tag locked">₹49 Unlock</span>
+
+        <button class="ex-card glass locked" data-exercise="plank" disabled>
+          <span class="ex-icon icon-slate">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12h18M6 12V8a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v4M9 20v-3M15 20v-3"/></svg>
+          </span>
+          <span class="ex-info"><h4>Plank</h4><p>Hold timer + sag detect</p></span>
+          <span class="ex-tag locked">₹49</span>
         </button>
       </div>
 
-      <details class="learn">
+      <details class="learn glass">
         <summary>Surya Namaskar kaise karte hain? (12 steps)</summary>
         <ol>
           <li><b>Pranamasana</b> — seedhe khade ho, haath chest pe namaste</li>
@@ -51,31 +89,71 @@
         </ol>
         <p class="muted">Camera screen pe app har pose ka number aur instruction dikhayega — bas follow karte jao.</p>
       </details>
+    </section>
 
-      <div class="data-controls">
-        <h4>Aapka data (sirf is device pe)</h4>
-        <p class="muted">Video kabhi upload nahi hota. Data device se bahar nahi jaata. Koi backup hum nahi rakhte.</p>
-        <button id="btn-export" class="link-btn">Data export karo (CSV)</button>
-        <button id="btn-delete" class="link-btn danger">Mera saara data delete karo</button>
+    <!-- ============ TAB: HISTORY ============ -->
+    <section id="tab-history" class="tab hidden">
+      <h3 class="section-title">Session history</h3>
+      <div id="history-list" class="glass card"></div>
+      <button id="btn-export" class="btn-secondary glass">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
+        Data export karo (CSV)
+      </button>
+    </section>
+
+    <!-- ============ TAB: SETTINGS ============ -->
+    <section id="tab-settings" class="tab hidden">
+      <h3 class="section-title">Settings</h3>
+
+      <div class="glass card">
+        <h4 class="card-title">Aapka device</h4>
+        <p class="muted small">Ye code license activate karne ke liye hai</p>
+        <div id="device-code" class="device-code">--------</div>
+      </div>
+
+      <div class="glass card">
+        <h4 class="card-title">License</h4>
+        <p id="license-line" class="muted small">Free version — 2 exercises</p>
+        <input id="license-key-input" placeholder="FC-XXXX-XXXX-XXXX-XXXX-XXXX" autocomplete="off">
+        <button id="activate-btn" class="btn-primary">Activate</button>
+        <p id="activate-msg" class="small"></p>
+      </div>
+
+      <div class="glass card">
+        <h4 class="card-title">Aapka data</h4>
+        <p class="muted small">Video kabhi upload nahi hota. Data sirf is device pe rehta hai. Koi backup hum nahi rakhte.</p>
+        <button id="btn-delete" class="btn-danger-ghost">Mera saara data delete karo</button>
+      </div>
+
+      <div class="glass card">
+        <h4 class="card-title">About</h4>
+        <p class="muted small">FormCoach v0.4 — open source (MIT). Camera AI aapke device pe hi chalta hai.</p>
+        <p class="muted small">github.com/mukund-buddy/formcoach</p>
       </div>
     </section>
 
-    <!-- Goal picker -->
-    <section id="goal-picker" class="hidden">
+    <!-- ============ FLOW: GOAL PICKER ============ -->
+    <section id="flow-goal" class="flow hidden">
+      <button id="goal-back" class="back-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
       <h2 id="goal-title">Target chuno</h2>
       <p class="muted">Kitne tak ginoge? Goal complete hone pe app khud bata dega.</p>
-      <p class="muted tip">Tip: Surya Namaskar ke liye phone ko side view mein rakho (⇄ se back camera) — counting zyada accurate hogi.</p>
+      <p class="muted tip">Tip: Surya ke liye phone side view mein rakho (⇄ back camera) — counting accurate hogi.</p>
       <div id="goal-chips" class="chip-row"></div>
-      <button id="goal-back" class="link-btn">← Wapas</button>
     </section>
 
-    <!-- Camera + skeleton overlay -->
-    <section id="camera-stage" class="hidden">
+    <!-- ============ FLOW: CAMERA ============ -->
+    <section id="flow-camera" class="flow hidden">
       <div class="cam-top">
-        <button id="cam-exit" title="Band karo">✕</button>
+        <button id="cam-exit" class="cam-chip" title="Band karo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
         <div id="goal-pill">--</div>
         <span class="spacer"></span>
-        <button id="btn-flip" title="Camera palto">⇄</button>
+        <button id="btn-flip" class="cam-chip" title="Camera palto">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 8h-9a4 4 0 0 0-4 4v2M4 16h9a4 4 0 0 0 4-4v-2"/><path d="M17 5l3 3-3 3M7 19l-3-3 3-3"/></svg>
+        </button>
       </div>
       <div class="cam-view">
         <video id="camera-feed" playsinline muted autoplay></video>
@@ -94,41 +172,38 @@
         <p id="status-chip" class="hidden"></p>
       </div>
       <div class="cam-controls">
-        <button id="btn-pause">Pause</button>
-        <button id="btn-end">Khatam</button>
+        <button id="btn-pause" class="btn-secondary">Pause</button>
+        <button id="btn-end" class="btn-danger">Khatam</button>
       </div>
     </section>
 
-    <!-- Unlock screen -->
-    <section id="unlock-screen" class="hidden">
-      <h2>Full Version — ₹49 one-time</h2>
-      <p>Apna device code UPI payment ke saath WhatsApp pe bhejo:</p>
-      <div id="device-code" class="device-code">--------</div>
-      <ol class="steps">
-        <li>UPI se ₹49 karo (QR yahan aayega)</li>
-        <li>WhatsApp: payment screenshot + device code + apna naam</li>
-        <li>License key milegi — neeche enter karo</li>
-      </ol>
-      <input id="license-key-input" placeholder="FC-XXXX-XXXX-XXXX-XXXX-XXXX" autocomplete="off">
-      <button id="activate-btn">Activate</button>
-      <p id="activate-msg"></p>
-      <button id="restore-link" class="link-btn">Pehle purchase kiya? Restore karo</button>
-      <button id="unlock-back" class="link-btn">← Wapas</button>
-    </section>
-
-    <!-- Session summary -->
-    <section id="summary-screen" class="hidden">
-      <h2 id="summary-title">Session khatam!</h2>
-      <div id="summary-stats"></div>
-      <button id="summary-home">Home</button>
+    <!-- ============ FLOW: SUMMARY ============ -->
+    <section id="flow-summary" class="flow hidden">
+      <div class="summary-hero glass">
+        <h2 id="summary-title">Session khatam!</h2>
+      </div>
+      <div id="summary-stats" class="glass card"></div>
+      <button id="summary-home" class="btn-primary">Home</button>
     </section>
 
     <p id="error-msg" class="hidden"></p>
   </main>
 
-  <footer>
-    <button id="btn-unlock" class="link-btn">Unlock Full ₹49</button>
-  </footer>
+  <!-- Floating bottom navigation -->
+  <nav class="bottom-nav glass">
+    <button class="nav-btn active" data-tab="home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8v9a2 2 0 0 1-2 2h-4v-6h-6v6H5a2 2 0 0 1-2-2z"/></svg>
+      <span>Home</span>
+    </button>
+    <button class="nav-btn" data-tab="history">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 20v-7M12 20V6M19 20v-4"/></svg>
+      <span>History</span>
+    </button>
+    <button class="nav-btn" data-tab="settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h10M18 6h2M4 12h2M10 12h10M4 18h10M18 18h2"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="18" r="2"/></svg>
+      <span>Settings</span>
+    </button>
+  </nav>
 
   <script type="module" src="js/app.js"></script>
 </body>
