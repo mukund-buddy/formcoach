@@ -1,0 +1,12 @@
+[package]
+name = "formcoach-keygen"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+ed25519-dalek = "2"
+rand = "0.8"
+data-encoding = "2"
+hex = "0.4"
+anyhow = "1"
