@@ -27,109 +27,147 @@
     <!-- ============ TAB: HOME (dashboard) ============ -->
     <section id="tab-home" class="tab">
       <div class="greet-card glass">
-        <p class="greet-hi">Namaste</p>
-        <h2>Aaj ka target?</h2>
+        <p class="greet-hi" data-i18n="greeting">Namaste</p>
+        <h2 data-i18n="greet_target">Aaj ka target?</h2>
         <div class="stat-chips">
-          <div class="stat-chip"><b id="stat-streak">0</b><span>din streak</span></div>
-          <div class="stat-chip"><b id="stat-today">0</b><span>aaj ke reps</span></div>
-          <div class="stat-chip"><b id="stat-sessions">0</b><span>sessions</span></div>
+          <div class="stat-chip"><b id="stat-streak">0</b><span data-i18n="unit_streak">din streak</span></div>
+          <div class="stat-chip"><b id="stat-today">0</b><span data-i18n="unit_today">aaj ke reps</span></div>
+          <div class="stat-chip"><b id="stat-sessions">0</b><span data-i18n="unit_sessions">sessions</span></div>
         </div>
       </div>
 
-      <h3 class="section-title">Exercises</h3>
+      <h3 class="section-title" data-i18n="ex_title">Exercises</h3>
       <div class="ex-list">
         <button class="ex-card glass" data-exercise="pushup">
           <span class="ex-icon icon-violet">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6v12M18 6v12M3 9v6M21 9v6M6 12h12"/></svg>
           </span>
-          <span class="ex-info"><h4>Pushups</h4><p>Elbow-angle form check</p></span>
-          <span class="ex-tag free">Free</span>
+          <span class="ex-info"><h4 data-i18n="ex_pushup_name">Pushups</h4><p data-i18n="ex_pushup_sub">Elbow-angle form check</p></span>
+          <span class="ex-tag free" data-i18n="free_tag">Free</span>
         </button>
 
         <button class="ex-card glass" data-exercise="surya">
           <span class="ex-icon icon-amber">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="9" r="4"/><path d="M12 1v2M12 15v2M4 9H2M22 9h-2M6 3l1.5 1.5M17.5 4.5L19 3M6 15l1.5 1.5M17.5 13.5L19 15M8 21h8"/></svg>
           </span>
-          <span class="ex-info"><h4>Surya Namaskar</h4><p>Guided 12-pose flow</p></span>
-          <span class="ex-tag free">Free</span>
+          <span class="ex-info"><h4 data-i18n="ex_surya_name">Surya Namaskar</h4><p data-i18n="ex_surya_sub">Guided 12-pose flow</p></span>
+          <span class="ex-tag free" data-i18n="free_tag">Free</span>
         </button>
 
         <button class="ex-card glass locked" data-exercise="squats" disabled>
           <span class="ex-icon icon-slate">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
           </span>
-          <span class="ex-info"><h4>Squats</h4><p>Knee-angle tracker</p></span>
-          <span class="ex-tag locked">₹49</span>
+          <span class="ex-info"><h4 data-i18n="ex_squats_name">Squats</h4><p data-i18n="ex_squats_sub">Knee-angle tracker</p></span>
+          <span class="ex-tag locked" data-i18n="locked_tag">₹49</span>
         </button>
 
         <button class="ex-card glass locked" data-exercise="plank" disabled>
           <span class="ex-icon icon-slate">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12h18M6 12V8a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v4M9 20v-3M15 20v-3"/></svg>
           </span>
-          <span class="ex-info"><h4>Plank</h4><p>Hold timer + sag detect</p></span>
-          <span class="ex-tag locked">₹49</span>
+          <span class="ex-info"><h4 data-i18n="ex_plank_name">Plank</h4><p data-i18n="ex_plank_sub">Hold timer + sag detect</p></span>
+          <span class="ex-tag locked" data-i18n="locked_tag">₹49</span>
         </button>
       </div>
 
       <details class="learn glass">
-        <summary>Surya Namaskar kaise karte hain? (12 steps)</summary>
+        <summary data-i18n="learn_summary">Surya Namaskar kaise karte hain? (12 steps)</summary>
         <ol>
-          <li><b>Pranamasana</b> — seedhe khade ho, haath chest pe namaste</li>
-          <li><b>Hasta Uttanasana</b> — haath sar ke upar uthao, peeche jhuko</li>
-          <li><b>Padahastasana</b> — aage jhuko, haath pairon/zameen tak</li>
-          <li><b>Ashwa Sanchalanasana</b> — ek pair peeche, haath zameen, dekho upar</li>
-          <li><b>Dandasana</b> — dusra pair bhi peeche, seedhi plank</li>
-          <li><b>Ashtanga Namaskara</b> — ghutne, seena, matha zameen pe</li>
-          <li><b>Bhujangasana</b> — seena upar uthao (cobra)</li>
-          <li><b>Adho Mukha Svanasana</b> — kamar sabse upar, ulta V</li>
-          <li><b>Ashwa Sanchalanasana</b> — pehla pair aage lao</li>
-          <li><b>Padahastasana</b> — dusra pair bhi aage, aage jhuko</li>
-          <li><b>Hasta Uttanasana</b> — utho, haath upar</li>
-          <li><b>Pranamasana</b> — haath chest pe jodo. 1 round poora!</li>
+          <li data-i18n-html="learn_s1"></li>
+          <li data-i18n-html="learn_s2"></li>
+          <li data-i18n-html="learn_s3"></li>
+          <li data-i18n-html="learn_s4"></li>
+          <li data-i18n-html="learn_s5"></li>
+          <li data-i18n-html="learn_s6"></li>
+          <li data-i18n-html="learn_s7"></li>
+          <li data-i18n-html="learn_s8"></li>
+          <li data-i18n-html="learn_s9"></li>
+          <li data-i18n-html="learn_s10"></li>
+          <li data-i18n-html="learn_s11"></li>
+          <li data-i18n-html="learn_s12"></li>
         </ol>
-        <p class="muted">Camera screen pe app har pose ka number aur instruction dikhayega — bas follow karte jao.</p>
+        <p class="muted" data-i18n="learn_note"></p>
       </details>
     </section>
 
     <!-- ============ TAB: HISTORY ============ -->
     <section id="tab-history" class="tab hidden">
-      <h3 class="section-title">Session history</h3>
+      <h3 class="section-title" data-i18n="hist_title">Session history</h3>
       <div id="history-list" class="glass card"></div>
       <button id="btn-export" class="btn-secondary glass">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
-        Data export karo (CSV)
+        <span data-i18n="btn_export">Data export karo (CSV)</span>
       </button>
     </section>
 
     <!-- ============ TAB: SETTINGS ============ -->
     <section id="tab-settings" class="tab hidden">
-      <h3 class="section-title">Settings</h3>
+      <h3 class="section-title" data-i18n="set_title">Settings</h3>
 
       <div class="glass card">
-        <h4 class="card-title">Aapka device</h4>
-        <p class="muted small">Ye code license activate karne ke liye hai</p>
+        <h4 class="card-title" data-i18n="set_lang">Bhasha</h4>
+        <div class="chip-row" id="lang-chips">
+          <button class="chip lang-chip" data-lang="hinglish">Hinglish</button>
+          <button class="chip lang-chip" data-lang="hindi">हिंदी</button>
+          <button class="chip lang-chip" data-lang="english">English</button>
+        </div>
+      </div>
+
+      <div class="glass card">
+        <h4 class="card-title" data-i18n="set_device">Aapka device</h4>
+        <p class="muted small" data-i18n="set_device_note">Ye code license activate karne ke liye hai</p>
         <div id="device-code" class="device-code">--------</div>
       </div>
 
       <div class="glass card">
-        <h4 class="card-title">License</h4>
+        <h4 class="card-title" data-i18n="set_license">License</h4>
         <p id="license-line" class="muted small">Free version — 2 exercises</p>
         <input id="license-key-input" placeholder="FC-XXXX-XXXX-XXXX-XXXX-XXXX" autocomplete="off">
-        <button id="activate-btn" class="btn-primary">Activate</button>
+        <button id="activate-btn" class="btn-primary" data-i18n="btn_activate">Activate</button>
         <p id="activate-msg" class="small"></p>
       </div>
 
       <div class="glass card">
-        <h4 class="card-title">Aapka data</h4>
-        <p class="muted small">Video kabhi upload nahi hota. Data sirf is device pe rehta hai. Koi backup hum nahi rakhte.</p>
-        <button id="btn-delete" class="btn-danger-ghost">Mera saara data delete karo</button>
+        <h4 class="card-title" data-i18n="set_data">Aapka data</h4>
+        <p class="muted small" data-i18n="set_data_note"></p>
+        <button id="btn-delete" class="btn-danger-ghost" data-i18n="btn_delete">Mera saara data delete karo</button>
       </div>
 
       <div class="glass card">
-        <h4 class="card-title">About</h4>
-        <p class="muted small">FormCoach v0.4 — open source (MIT). Camera AI aapke device pe hi chalta hai.</p>
-        <p class="muted small">github.com/mukund-buddy/formcoach</p>
+        <h4 class="card-title" data-i18n="about_title">About</h4>
+        <p class="muted small" data-i18n="about_1">FormCoach v0.5 — open source (MIT). Camera AI aapke device pe hi chalta hai.</p>
+        <p class="muted small" data-i18n="about_repo">github.com/mukund-buddy/formcoach</p>
       </div>
+    </section>
+
+    <!-- ============ FLOW: PREP (start ya tutorial) ============ -->
+    <section id="flow-prep" class="flow hidden">
+      <button id="prep-back" class="back-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <div class="prep-hero glass">
+        <h2 id="prep-title">Pushups</h2>
+        <p class="muted" data-i18n="prep_know">Ye exercise aati hai?</p>
+      </div>
+      <div class="prep-actions">
+        <button id="btn-start" class="btn-primary" data-i18n="btn_start">Shuru karo</button>
+        <button id="btn-watch" class="btn-secondary glass" data-i18n="btn_watch">Tutorial dekho</button>
+      </div>
+    </section>
+
+    <!-- ============ FLOW: TUTORIAL ============ -->
+    <section id="flow-tutorial" class="flow hidden">
+      <button id="tut-back" class="back-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <h2 id="tut-title" class="tut-title">Tutorial</h2>
+      <div class="tut-video-wrap glass">
+        <video id="tut-video" controls muted loop playsinline preload="metadata"></video>
+        <p class="muted small" data-i18n="tut_note">Video mein sirf background music hai — neeche ke steps follow karte jao.</p>
+      </div>
+      <ol id="tut-steps" class="tut-steps glass card"></ol>
+      <button id="tut-start" class="btn-primary" data-i18n="btn_start">Shuru karo</button>
     </section>
 
     <!-- ============ FLOW: GOAL PICKER ============ -->
@@ -138,8 +176,8 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
       </button>
       <h2 id="goal-title">Target chuno</h2>
-      <p class="muted">Kitne tak ginoge? Goal complete hone pe app khud bata dega.</p>
-      <p class="muted tip">Tip: Surya ke liye phone side view mein rakho (⇄ back camera) — counting accurate hogi.</p>
+      <p class="muted" data-i18n="goal_hint">Kitne tak ginoge? Goal complete hone pe app khud bata dega.</p>
+      <p class="muted tip" data-i18n="goal_tip">Tip: Surya ke liye phone side view mein rakho (⇄ back camera) — counting accurate hogi.</p>
       <div id="goal-chips" class="chip-row"></div>
     </section>
 
@@ -172,8 +210,8 @@
         <p id="status-chip" class="hidden"></p>
       </div>
       <div class="cam-controls">
-        <button id="btn-pause" class="btn-secondary">Pause</button>
-        <button id="btn-end" class="btn-danger">Khatam</button>
+        <button id="btn-pause" class="btn-secondary" data-i18n="pause_btn">Pause</button>
+        <button id="btn-end" class="btn-danger" data-i18n="end_btn">Khatam</button>
       </div>
     </section>
 
@@ -183,7 +221,7 @@
         <h2 id="summary-title">Session khatam!</h2>
       </div>
       <div id="summary-stats" class="glass card"></div>
-      <button id="summary-home" class="btn-primary">Home</button>
+      <button id="summary-home" class="btn-primary" data-i18n="btn_home">Home</button>
     </section>
 
     <p id="error-msg" class="hidden"></p>
@@ -193,15 +231,15 @@
   <nav class="bottom-nav glass">
     <button class="nav-btn active" data-tab="home">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8v9a2 2 0 0 1-2 2h-4v-6h-6v6H5a2 2 0 0 1-2-2z"/></svg>
-      <span>Home</span>
+      <span data-i18n="nav_home">Home</span>
     </button>
     <button class="nav-btn" data-tab="history">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 20v-7M12 20V6M19 20v-4"/></svg>
-      <span>History</span>
+      <span data-i18n="nav_history">History</span>
     </button>
     <button class="nav-btn" data-tab="settings">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h10M18 6h2M4 12h2M10 12h10M4 18h10M18 18h2"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="18" r="2"/></svg>
-      <span>Settings</span>
+      <span data-i18n="nav_settings">Settings</span>
     </button>
   </nav>
 

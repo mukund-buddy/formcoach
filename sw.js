@@ -1,5 +1,5 @@
 // FormCoach Service Worker — offline-first shell
-const CACHE = "formcoach-v5";
+const CACHE = "formcoach-v6";
 const ASSETS = [
   "./",
   "./index.html",
@@ -10,6 +10,7 @@ const ASSETS = [
   "./js/storage.js",
   "./js/voice.js",
   "./js/license.js",
+  "./js/i18n.js",
   "./js/exercises/pushup.js",
   "./js/exercises/surya.js"
 ];
@@ -62,7 +63,17 @@ self.addEventListener("fetch", (e) => {
     return;
   }
 
+  // baaki (icons, tutorial videos): cache-first + fetched response cache ho jaye
   e.respondWith(
-    caches.match(e.request).then((cached) => cached || fetch(e.request))
+    caches.match(e.request).then((cached) => {
+      if (cached) return cached;
+      return fetch(e.request).then((resp) => {
+        if (resp.ok) {
+          const clone = resp.clone();
+          caches.open(CACHE).then((c) => c.put(e.request, clone));
+        }
+        return resp;
+      });
+    })
   );
 });

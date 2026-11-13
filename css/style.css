@@ -588,3 +588,52 @@ button { font-family: inherit; cursor: pointer; }
     border-radius: 0 0 var(--radius) var(--radius);
   }
 }
+
+/* ---------- Prep + Tutorial flows ---------- */
+#flow-prep .prep-hero {
+  padding: 22px;
+  border-radius: 22px;
+  margin-bottom: 18px;
+}
+#flow-prep h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 6px; }
+#flow-prep .muted { margin: 0; }
+.prep-actions { display: flex; flex-direction: column; gap: 12px; }
+.prep-actions .btn-primary,
+.prep-actions .btn-secondary { min-height: 56px; font-size: 1.05rem; }
+
+#flow-tutorial .tut-title {
+  font-size: 1.3rem;
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+.tut-video-wrap {
+  border-radius: 20px;
+  padding: 10px;
+  margin-bottom: 14px;
+}
+#tut-video {
+  width: 100%;
+  border-radius: 14px;
+  background: #0f172a;
+  display: block;
+  aspect-ratio: 16 / 9;
+}
+.tut-video-wrap .small { margin: 8px 4px 0; }
+.tut-steps {
+  margin: 0 0 16px;
+  padding: 18px 18px 18px 40px;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.tut-steps li { font-size: 0.95rem; line-height: 1.45; }
+.tut-steps li::marker { color: var(--accent); font-weight: 800; }
+
+/* ---------- Language chips ---------- */
+.lang-chip.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }

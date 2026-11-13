@@ -5,6 +5,7 @@
 // Signals front aur side dono view se kaam karne ki koshish karte hain,
 // side view sabse accurate hai (goal screen pe tip diya hai).
 import { angleDeg, midpoint } from "../angles.js";
+import { t, poseInstructions } from "../i18n.js";
 
 // Landmark indices: 0 nose, 11/12 shoulders, 13/14 elbows, 15/16 wrists,
 // 23/24 hips, 25/26 knees, 27/28 ankles
@@ -23,7 +24,8 @@ export class SuryaExercise {
     let stepChanged = false;
 
     let repped = false;
-    let cue = null;      // transient (round complete etc.)
+    let cueKey = null;   // transient (round complete etc.)
+    let cueVars = null;
     let formPct = null;
 
     if (hit) {
@@ -35,7 +37,8 @@ export class SuryaExercise {
         if (this.step % 12 === 0) {
           this.reps += 1;
           repped = true;
-          cue = `${this.reps} round ho gaya! Shabash!`;
+          cueKey = "round_done";
+          cueVars = { n: this.reps };
         }
       }
     } else {
@@ -43,12 +46,14 @@ export class SuryaExercise {
     }
 
     const next = this.step % 12;
+    const instr = poseInstructions()[next];
     return {
       repped,
-      cue,
+      cueKey,
+      cueVars,
       // persistent instruction — app hamesha ye dikhata hai
-      cueHold: `Pose ${next + 1}/12: ${POSE_INSTRUCTIONS[next]}`,
-      voiceLine: POSE_INSTRUCTIONS[next],
+      cueHold: `${t("pose_word")} ${next + 1}/12: ${instr}`,
+      voiceLine: instr,
       stepChanged,
       formPct,
       raw: { step: next, hit, holdFrames: this.stepHoldFrames },
@@ -60,22 +65,6 @@ export const POSE_NAMES = [
   "Pranamasana", "Hasta Uttanasana", "Padahastasana", "Ashwa Sanchalanasana",
   "Dandasana", "Ashtanga Namaskara", "Bhujangasana", "Adho Mukha Svanasana",
   "Ashwa Sanchalanasana (ulti)", "Padahastasana", "Hasta Uttanasana", "Pranamasana",
-];
-
-// User-friendly Hindi instructions (voice + screen)
-export const POSE_INSTRUCTIONS = [
-  "Haath chest pe jodo, seedhe khade raho",
-  "Haath sar ke upar uthao",
-  "Aage jhuko, haath pairon tak",
-  "Ek pair peeche, haath zameen pe",
-  "Dusra pair bhi peeche, seedhi plank",
-  "Ghutne, seena, matha zameen pe",
-  "Seena upar uthao — cobra",
-  "Kamar sabse upar — ulta V",
-  "Ek pair aage lao, haath zameen",
-  "Dusra pair bhi aage, jhuko",
-  "Uth ke haath upar uthao",
-  "Haath chest pe jodo — round poora!",
 ];
 
 // Har pose ka detect — true jab pose "hit" ho

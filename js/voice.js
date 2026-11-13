@@ -1,13 +1,17 @@
-// Hindi voice feedback — Web Speech API (offline-capable on Android Chrome)
+// Voice feedback — Web Speech API (offline-capable on Android Chrome)
+// Locale follows selected language: hinglish/hindi -> hi-IN, english -> en-IN
+import { voiceLang } from "./i18n.js";
+
 let voiceReady = false;
 
-function pickHindiVoice() {
+function pickVoice(locale) {
   const voices = speechSynthesis.getVoices();
   return (
-    voices.find((v) => v.lang === "hi-IN") ||
-    voices.find((v) => v.lang?.startsWith("hi")) ||
-    voices.find((v) => v.lang?.startsWith("en-IN")) ||
-    null
+    voices.find((v) => v.lang === locale) ||
+    voices.find((v) => v.lang?.startsWith(locale.slice(0, 2))) ||
+    (locale.startsWith("hi")
+      ? voices.find((v) => v.lang?.startsWith("en-IN"))
+      : null)
   );
 }
 
@@ -17,10 +21,11 @@ export const Voice = {
   say(text) {
     if (!("speechSynthesis" in window)) return;
     try {
+      const locale = voiceLang();
       const u = new SpeechSynthesisUtterance(text);
-      const v = pickHindiVoice();
+      const v = pickVoice(locale);
       if (v) u.voice = v;
-      u.lang = "hi-IN";
+      u.lang = locale;
       u.rate = 1.05;
       u.pitch = 1;
       u.volume = 1;

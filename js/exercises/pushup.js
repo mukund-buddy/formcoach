@@ -66,7 +66,7 @@ export class PushupExercise {
     this.sagFrames = this.emaHip != null && this.emaHip < SAG_MIN ? this.sagFrames + 1 : 0;
     if (this.sagFrames > 12) {
       formPct -= 35;
-      cue = "Kamar seedhi rakho";
+      cue = "cue_sag";
     }
 
     // ---- counter 1: elbow state machine (debounced) ----
@@ -84,7 +84,7 @@ export class PushupExercise {
           if (elbow < UP_MIN) {
             if (++this.deadFrames >= DEAD_FRAMES) {
               this.deadFrames = 0;
-              cue = cue ?? "Aur neeche jao, kohni mudo";
+              cue = cue ?? "cue_deeper";
             }
           }
         }

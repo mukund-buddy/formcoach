@@ -1,15 +1,17 @@
-// FormCoach — app logic (glass UI, tabbed mobile IA)
+// FormCoach — app logic (glass UI, tabbed mobile IA, 3 languages)
 // Camera + MediaPipe Pose Landmarker (on-device) + goal/pause/cue system
+// Flow: ex-card -> prep (start | tutorial) -> tutorial (video+steps) -> goal -> camera -> summary
 
 import { Storage } from "./storage.js";
 import { Voice } from "./voice.js";
 import { License } from "./license.js";
 import { PushupExercise } from "./exercises/pushup.js";
 import { SuryaExercise } from "./exercises/surya.js";
+import { initLang, setLang, lang, t, tpl, dateLocale, tutSteps } from "./i18n.js";
 
 // ---------- DOM ----------
 const TABS = { home: "tab-home", history: "tab-history", settings: "tab-settings" };
-const FLOWS = { goal: "flow-goal", camera: "flow-camera", summary: "flow-summary" };
+const FLOWS = { prep: "flow-prep", tutorial: "flow-tutorial", goal: "flow-goal", camera: "flow-camera", summary: "flow-summary" };
 const ALL_SECTIONS = [...Object.values(TABS), ...Object.values(FLOWS)];
 const navEl = document.querySelector(".bottom-nav");
 const els = {
@@ -40,6 +42,10 @@ const els = {
   statToday: document.getElementById("stat-today"),
   statSessions: document.getElementById("stat-sessions"),
   historyList: document.getElementById("history-list"),
+  prepTitle: document.getElementById("prep-title"),
+  tutTitle: document.getElementById("tut-title"),
+  tutVideo: document.getElementById("tut-video"),
+  tutSteps: document.getElementById("tut-steps"),
 };
 
 function show(name) {
@@ -51,6 +57,7 @@ function show(name) {
       btn.classList.toggle("active", TABS[btn.dataset.tab] === name);
     }
   }
+  if (name !== FLOWS.tutorial) els.tutVideo.pause();
   refreshLicenseUI();
 }
 
@@ -68,10 +75,36 @@ for (const btn of navEl.querySelectorAll(".nav-btn")) {
 }
 els.statusPill.addEventListener("click", () => showTab("settings"));
 
+// ---------- i18n ----------
+function applyLang() {
+  document.documentElement.lang = lang === "english" ? "en" : "hi";
+  document.querySelectorAll("[data-i18n]").forEach((el) => (el.textContent = t(el.dataset.i18n)));
+  document.querySelectorAll("[data-i18n-html]").forEach((el) => (el.innerHTML = t(el.dataset.i18nHtml)));
+  document.querySelectorAll("[data-i18n-ph]").forEach((el) => (el.placeholder = t(el.dataset.i18nPh)));
+  document.querySelectorAll(".lang-chip").forEach((b) => b.classList.toggle("active", b.dataset.lang === lang));
+  renderDash();
+  renderHistory();
+  if (!document.getElementById(FLOWS.goal).classList.contains("hidden") && pendingExercise) {
+    openGoalPicker(pendingExercise, true);
+  }
+  if (!document.getElementById(FLOWS.tutorial).classList.contains("hidden") && pendingExercise) {
+    openTutorial(pendingExercise, true);
+  }
+}
+
+for (const chip of document.querySelectorAll(".lang-chip")) {
+  chip.addEventListener("click", async () => {
+    setLang(chip.dataset.lang);
+    await Storage.kvSet("lang", chip.dataset.lang).catch(() => {});
+    applyLang();
+    showTab("settings");
+  });
+}
+
 // ---------- Exercise registry + goals ----------
 const EXERCISES = { pushup: PushupExercise, surya: SuryaExercise };
 const GOALS = { pushup: [10, 20, 30, null], surya: [3, 5, 10, null] };
-const EX_LABEL = { pushup: "Pushups", surya: "Surya Namaskar" };
+const exLabel = (id) => t(`ex_${id}_name`);
 
 // ---------- Dashboard + history ----------
 function dayKey(ts) { return new Date(ts).toISOString().slice(0, 10); }
@@ -104,23 +137,25 @@ async function renderHistory() {
     const sessions = await Storage.getSessions();
     sessions.sort((a, b) => b.startedAt - a.startedAt);
     if (!sessions.length) {
-      els.historyList.innerHTML = `<div class="hist-empty">Abhi koi session nahi.<br>Pehla workout shuru karo!</div>`;
+      els.historyList.innerHTML = `<div class="hist-empty">${t("hist_empty")}</div>`;
       return;
     }
+    const loc = dateLocale();
     els.historyList.innerHTML = sessions
       .slice(0, 30)
       .map((s) => {
         const d = new Date(s.startedAt);
-        const label = EX_LABEL[s.exercise] || s.exercise;
-        const form = s.avgForm != null ? ` · ${Math.round(s.avgForm)}% form` : "";
+        const label = EXERCISES[s.exercise] ? exLabel(s.exercise) : s.exercise;
+        const form = s.avgForm != null ? ` · ${Math.round(s.avgForm)}% ${t("row_form").toLowerCase()}` : "";
+        const goal = s.goal != null ? tpl("hist_goal", { n: s.goal }) : t("hist_open");
         return `<div class="hist-row">
-          <div class="hist-info"><b>${label}</b><span>${d.toLocaleDateString("hi-IN")} · ${d.toLocaleTimeString("hi-IN", { hour: "2-digit", minute: "2-digit" })}${form}</span></div>
-          <div class="hist-nums"><b>${s.reps}</b><span>${s.goal != null ? `goal ${s.goal}` : "khula"}</span></div>
+          <div class="hist-info"><b>${label}</b><span>${d.toLocaleDateString(loc)} · ${d.toLocaleTimeString(loc, { hour: "2-digit", minute: "2-digit" })}${form}</span></div>
+          <div class="hist-nums"><b>${s.reps}</b><span>${goal}</span></div>
         </div>`;
       })
       .join("");
   } catch {
-    els.historyList.innerHTML = `<div class="hist-empty">History load nahi hui — dobara try karo</div>`;
+    els.historyList.innerHTML = `<div class="hist-empty">${t("hist_err")}</div>`;
   }
 }
 
@@ -141,7 +176,7 @@ let facing = "user"; // "user" = front, "environment" = back
 
 async function initPose() {
   els.loading.classList.remove("done");
-  els.loadMsg.textContent = "AI coach load ho raha hai... (pehli baar ~6MB)";
+  els.loadMsg.textContent = t("load_msg");
   els.loadRetry.classList.add("hidden");
   try {
     const vision = await import(`${MP_BASE}/vision_bundle.mjs`);
@@ -156,7 +191,7 @@ async function initPose() {
     });
     els.loading.classList.add("done");
   } catch (err) {
-    els.loadMsg.textContent = `Load fail: ${err.message}. Internet check karo, fir retry.`;
+    els.loadMsg.textContent = tpl("load_fail", { m: err.message });
     els.loadRetry.classList.remove("hidden");
     throw err;
   }
@@ -179,7 +214,7 @@ async function startCamera(mode = facing) {
 
 function stopCamera() {
   const stream = els.video.srcObject;
-  if (stream) stream.getTracks().forEach((t) => t.stop());
+  if (stream) stream.getTracks().forEach((tr) => tr.stop());
   els.video.srcObject = null;
 }
 
@@ -244,7 +279,7 @@ function evaluatePose(result) {
   if (!visible) {
     missFrames++;
     if (missFrames > 20) {
-      els.statusChip.textContent = "Body dikh nahi raha — camera ke saamne aao";
+      els.statusChip.textContent = t("st_body");
       els.statusChip.classList.remove("hidden");
     }
   } else {
@@ -261,9 +296,9 @@ function evaluatePose(result) {
   if (state.raw) {
     let dbg = "";
     if (state.raw.elbow != null) {
-      dbg = `kohna ${state.raw.elbow}° | kamar ${state.raw.hip}° | ${state.raw.phase} | ${state.raw.counter}`;
+      dbg = `${t("dbg_koh")} ${state.raw.elbow}° | ${t("dbg_kam")} ${state.raw.hip}° | ${state.raw.phase} | ${state.raw.counter}`;
     } else if (state.raw.step != null) {
-      dbg = state.raw.hit ? "pose sahi — hold karo" : "target pose banao";
+      dbg = state.raw.hit ? t("dbg_hit") : t("dbg_miss");
     }
     if (dbg) {
       els.debugChip.textContent = dbg;
@@ -271,9 +306,13 @@ function evaluatePose(result) {
     }
   }
   if (state.raw && state.raw.armVisible === false) {
-    els.statusChip.textContent = "Haath dikh nahi rahe — poora body frame mein rakho";
+    els.statusChip.textContent = t("st_arms");
     els.statusChip.classList.remove("hidden");
   }
+
+  const cueText = state.cueKey
+    ? tpl(state.cueKey, state.cueVars)
+    : (state.cue ? t(state.cue) : null);
 
   if (state.cueHold) {
     els.cueBanner.textContent = state.cueHold;
@@ -282,18 +321,18 @@ function evaluatePose(result) {
   }
 
   const now = performance.now();
-  if (state.cue && now - lastCueAt > 2500) {
+  if (cueText && now - lastCueAt > 2500) {
     lastCueAt = now;
-    els.cueBanner.textContent = state.cue;
+    els.cueBanner.textContent = cueText;
     els.cueBanner.classList.remove("hidden");
     setTimeout(() => {
-      if (els.cueBanner.textContent === state.cue) els.cueBanner.classList.add("hidden");
+      if (els.cueBanner.textContent === cueText) els.cueBanner.classList.add("hidden");
     }, 2200);
-    Voice.say(state.cue);
+    Voice.say(cueText);
   }
 
   if (session.goal != null && session.reps >= session.goal) {
-    Voice.say("Goal complete! Shabash!");
+    Voice.say(t("voice_goal"));
     endSession(true);
   }
 }
@@ -301,22 +340,63 @@ function evaluatePose(result) {
 function updateHud() {
   if (!session) return;
   els.goalPill.textContent =
-    session.goal != null ? `${session.reps} / ${session.goal}` : "Khula — ginte raho";
+    session.goal != null ? `${session.reps} / ${session.goal}` : t("open_goal");
   els.repCount.textContent = String(session.reps);
 }
 
 // ---------- Session flow ----------
 let pendingExercise = null;
 
+function openPrep(exerciseId) {
+  pendingExercise = exerciseId;
+  els.prepTitle.textContent = exLabel(exerciseId);
+  show(FLOWS.prep);
+}
+document.getElementById("prep-back").addEventListener("click", showHome);
+document.getElementById("btn-start").addEventListener("click", () => {
+  if (pendingExercise) openGoalPicker(pendingExercise);
+});
+document.getElementById("btn-watch").addEventListener("click", () => {
+  if (pendingExercise) openTutorial(pendingExercise);
+});
+
+const VIDEO_SRC = {
+  pushup: "assets/videos/pushup-tutorial.mp4",
+  surya: "assets/videos/surya-tutorial.webm",
+};
+
+function openTutorial(exerciseId, keepPosition = false) {
+  pendingExercise = exerciseId;
+  els.tutTitle.textContent = tpl("tut_title", { ex: exLabel(exerciseId) });
+  els.tutSteps.innerHTML = (tutSteps(exerciseId) || [])
+    .map((s) => `<li>${s}</li>`)
+    .join("");
+  const src = VIDEO_SRC[exerciseId];
+  if (src && !keepPosition) {
+    els.tutVideo.pause();
+    els.tutVideo.src = src;
+    els.tutVideo.load();
+    els.tutVideo.play().catch(() => {});
+  }
+  show(FLOWS.tutorial);
+}
+document.getElementById("tut-back").addEventListener("click", () => {
+  els.tutVideo.pause();
+  if (pendingExercise) openPrep(pendingExercise);
+});
+document.getElementById("tut-start").addEventListener("click", () => {
+  if (pendingExercise) openGoalPicker(pendingExercise);
+});
+
 function openGoalPicker(exerciseId) {
   pendingExercise = exerciseId;
-  els.goalTitle.textContent = `${EX_LABEL[exerciseId]} — Target chuno`;
+  els.goalTitle.textContent = tpl("goal_title", { ex: exLabel(exerciseId) });
   els.goalChips.innerHTML = "";
   for (const g of GOALS[exerciseId]) {
     const btn = document.createElement("button");
     btn.className = "chip";
     btn.textContent =
-      g == null ? "Khula (goal nahi)" : `${g} ${exerciseId === "surya" ? "round" : "reps"}`;
+      g == null ? t("open_label") : `${g} ${t(exerciseId === "surya" ? "unit_round" : "unit_reps")}`;
     btn.addEventListener("click", () => startSession(exerciseId, g));
     els.goalChips.appendChild(btn);
   }
@@ -326,7 +406,7 @@ document.getElementById("goal-back").addEventListener("click", showHome);
 
 async function startSession(exerciseId, goal) {
   paused = false;
-  els.btnPause.textContent = "Pause";
+  els.btnPause.textContent = t("pause_btn");
   els.btnPause.classList.remove("paused");
   els.repCount.textContent = "0";
   els.statusChip.classList.add("hidden");
@@ -335,7 +415,7 @@ async function startSession(exerciseId, goal) {
     els.error.classList.add("hidden");
     show(FLOWS.camera);
     els.loading.classList.remove("done");
-    els.loadMsg.textContent = "AI coach load ho raha hai... (pehli baar ~6MB)";
+    els.loadMsg.textContent = t("load_msg");
     if (!poseLandmarker) await initPose();
     await startCamera();
     currentExercise = new EXERCISES[exerciseId]();
@@ -346,9 +426,9 @@ async function startSession(exerciseId, goal) {
     els.loading.classList.add("done");
     cancelAnimationFrame(rafId);
     loop();
-    Voice.say(`Shuru karo! Target ${goal ?? "khula"}`);
+    Voice.say(goal == null ? t("voice_start_open") : tpl("voice_start", { n: goal }));
   } catch (err) {
-    els.loadMsg.textContent = `Error: ${err.message || err}`;
+    els.loadMsg.textContent = tpl("error_tpl", { m: err.message || err });
     els.loadRetry.classList.remove("hidden");
     els.loading.classList.remove("done");
   }
@@ -361,9 +441,9 @@ document.getElementById("cam-exit").addEventListener("click", () => {
 els.btnPause.addEventListener("click", () => {
   if (!session) return;
   paused = !paused;
-  els.btnPause.textContent = paused ? "Resume" : "Pause";
+  els.btnPause.textContent = paused ? t("resume_btn") : t("pause_btn");
   els.btnPause.classList.toggle("paused", paused);
-  if (paused) Voice.say("Pause");
+  if (paused) Voice.say(t("voice_pause"));
 });
 els.btnFlip.addEventListener("click", async () => {
   if (!session) return;
@@ -388,15 +468,15 @@ function endSession(achieved) {
       ? Math.round(session.formSamples.reduce((a, b) => a + b, 0) / session.formSamples.length)
       : null;
     Storage.saveSession({ ...session, avgForm, achieved, endedAt: Date.now() });
-    els.summaryTitle.textContent = achieved ? "Goal complete — Shabash!" : "Session khatam!";
+    els.summaryTitle.textContent = achieved ? t("sum_win") : t("sum_done");
     els.summaryTitle.classList.toggle("win", achieved);
     const mins = Math.max(1, Math.round((Date.now() - session.startedAt) / 60000));
     els.summaryStats.innerHTML = `
-      <div class="row"><span>Exercise</span><b>${EX_LABEL[session.exercise]}</b></div>
-      <div class="row"><span>Reps</span><b>${session.reps}</b></div>
-      <div class="row"><span>Goal</span><b>${session.goal ?? "Khula"}</b></div>
-      <div class="row"><span>Form</span><b>${avgForm != null ? avgForm + "%" : "--"}</b></div>
-      <div class="row"><span>Time</span><b>${mins} min</b></div>`;
+      <div class="row"><span>${t("row_exercise")}</span><b>${exLabel(session.exercise)}</b></div>
+      <div class="row"><span>${t("row_reps")}</span><b>${session.reps}</b></div>
+      <div class="row"><span>${t("row_goal")}</span><b>${session.goal ?? t("hist_open")}</b></div>
+      <div class="row"><span>${t("row_form")}</span><b>${avgForm != null ? avgForm + "%" : "--"}</b></div>
+      <div class="row"><span>${t("row_time")}</span><b>${mins} ${t("min_unit")}</b></div>`;
     show(FLOWS.summary);
   }
   currentExercise = null;
@@ -407,16 +487,16 @@ document.getElementById("summary-home").addEventListener("click", showHome);
 // ---------- License (Settings) ----------
 async function refreshLicenseUI() {
   const ok = License.isUnlocked();
-  els.statusPill.textContent = ok ? "Full" : "Free";
+  els.statusPill.textContent = ok ? t("pill_full") : t("pill_free");
   els.statusPill.classList.toggle("paid", ok);
-  els.licenseLine.textContent = ok ? "Full version active — sab exercises unlocked" : "Free version — 2 exercises";
+  els.licenseLine.textContent = ok ? t("lic_full") : t("lic_free");
 }
 
 document.getElementById("activate-btn").addEventListener("click", async () => {
   const msg = els.activateMsg;
   msg.className = "small";
   const ok = await License.activate(els.keyInput.value.trim());
-  msg.textContent = ok ? "Activated! Full version unlocked." : "Key invalid ya doosre device ki hai.";
+  msg.textContent = ok ? t("act_ok") : t("act_err");
   msg.classList.add(ok ? "ok" : "err");
   if (ok) refreshLicenseUI();
 });
@@ -432,25 +512,25 @@ document.getElementById("btn-export").addEventListener("click", async () => {
   URL.revokeObjectURL(a.href);
 });
 document.getElementById("btn-delete").addEventListener("click", async () => {
-  const sure = confirm(
-    "Saara data (sessions, streaks, unlock state) is device se delete ho jayega.\n" +
-      "Hum iska koi backup nahi rakhte — ye wapas nahi aayega. Pakka?"
-  );
+  const sure = confirm(t("confirm_delete"));
   if (!sure) return;
   await Storage.deleteAll();
   License._unlocked = false;
   refreshLicenseUI();
 });
 
-// ---------- Wiring: home cards ----------
+// ---------- Wiring: home cards -> prep flow ----------
 document.querySelectorAll(".ex-card:not(.locked)").forEach((btn) =>
-  btn.addEventListener("click", () => openGoalPicker(btn.dataset.exercise))
+  btn.addEventListener("click", () => openPrep(btn.dataset.exercise))
 );
 
-// init — license/device fail ho to bhi home dikhe
-License.init().catch(() => {}).finally(() => {
-  License.getDeviceCode()
-    .then((c) => { els.deviceCode.textContent = c; })
-    .catch(() => {});
-  showHome();
+// init — language, license/device fail ho to bhi home dikhe
+initLang(Storage).finally(() => {
+  License.init().catch(() => {}).finally(() => {
+    License.getDeviceCode()
+      .then((c) => { els.deviceCode.textContent = c; })
+      .catch(() => {});
+    applyLang();
+    showHome();
+  });
 });
