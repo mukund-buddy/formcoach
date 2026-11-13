@@ -201,7 +201,7 @@ function evaluatePose(result) {
   if (state.raw) {
     let dbg = "";
     if (state.raw.elbow != null) {
-      dbg = `kohna ${state.raw.elbow}° | kamar ${state.raw.hip}° | ${state.raw.phase}`;
+      dbg = `kohna ${state.raw.elbow}° | kamar ${state.raw.hip}° | ${state.raw.phase} | ${state.raw.counter}`;
     } else if (state.raw.step != null) {
       dbg = state.raw.hit ? "pose sahi — hold karo" : "target pose banao";
     }

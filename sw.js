@@ -1,5 +1,5 @@
 // FormCoach Service Worker — offline-first shell
-const CACHE = "formcoach-v3";
+const CACHE = "formcoach-v4";
 const ASSETS = [
   "./",
   "./index.html",
